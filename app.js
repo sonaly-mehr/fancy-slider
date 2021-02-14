@@ -154,6 +154,8 @@ searchBtn.addEventListener('click', function () {
   const search = document.getElementById('search');
   getImages(search.value)
   sliders.length = 0;
+
+  //Feature-2
   search.value='';
 })
 
