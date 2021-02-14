@@ -8,6 +8,17 @@ const sliderContainer = document.getElementById('sliders');
 let sliders = [];
 
 
+//Search-Enter key
+
+document.getElementById("search").addEventListener("keypress", function(event) {
+    // event.preventDefault();
+     if (event.key == 'Enter'){
+     document.getElementById("search-btn").click();
+     }
+});
+
+
+
 // If this key doesn't work
 // Find the name in the url and go to their website
 // to create your own api key
@@ -25,26 +36,45 @@ const showImages = (images) => {
     div.innerHTML = ` <img class="img-fluid img-thumbnail" onclick=selectItem(event,"${image.webformatURL}") src="${image.webformatURL}" alt="${image.tags}">`;
     gallery.appendChild(div)
   })
+  toggleSpinner(false);
 
 }
 
 const getImages = (query) => {
+  toggleSpinner(true);
   fetch(`https://pixabay.com/api/?key=${KEY}=${query}&image_type=photo&pretty=true`)
     .then(response => response.json())
-    .then(data => showImages(data.hitS))
-    .catch(err => console.log(err))
+    .then(data => showImages(data.hits))
 }
+
+//Spinner - Feature-1
+
+const toggleSpinner= (show)=> {
+  
+  const spinner= document.getElementById('toggle-spinner');
+
+  if(show){
+    spinner.classList.remove('d-none');
+  }
+  else{
+    spinner.classList.add('d-none');
+  }
+}
+
+
 
 let slideIndex = 0;
 const selectItem = (event, img) => {
   let element = event.target;
-  element.classList.add('added');
  
   let item = sliders.indexOf(img);
   if (item === -1) {
+    element.classList.add('added');
     sliders.push(img);
+
   } else {
-    alert('Hey, Already added !')
+    element.classList.remove('added');
+    sliders.pop(img);
   }
 }
 var timer
@@ -67,7 +97,16 @@ const createSlider = () => {
   document.querySelector('.main').style.display = 'block';
   // hide image aria
   imagesArea.style.display = 'none';
-  const duration = document.getElementById('duration').value || 1000;
+  let duration = document.getElementById('doration').value || 1000;
+  
+  //Restricted from using negative number
+  //and the default value is set to 1000
+  
+  if(duration<0){
+     alert('negative value can not be used');
+     duration= 1000;
+  }
+
   sliders.forEach(slide => {
     let item = document.createElement('div')
     item.className = "slider-item";
@@ -115,6 +154,7 @@ searchBtn.addEventListener('click', function () {
   const search = document.getElementById('search');
   getImages(search.value)
   sliders.length = 0;
+  search.value='';
 })
 
 sliderBtn.addEventListener('click', function () {
